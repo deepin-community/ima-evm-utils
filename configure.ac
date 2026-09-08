@@ -1,7 +1,7 @@
 # autoconf script
 
 AC_PREREQ([2.65])
-AC_INIT(ima-evm-utils, 1.4, zohar@linux.ibm.com)
+AC_INIT(ima-evm-utils, 1.5, zohar@linux.ibm.com)
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -15,15 +15,13 @@ AM_PROG_CC_C_O
 #AC_PROG_CXX
 #AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
 #AC_PROG_LN_S
+AC_CHECK_PROG(have_pandoc, [pandoc], [yes], [no])
+AM_CONDITIONAL([HAVE_PANDOC], [test "x$have_pandoc" = "xyes"])
 LT_INIT
 
 # FIXME: Replace `main' with a function in `-lpthread':
 #AC_CHECK_LIB([pthread], [main])
-
-# Checks for header files.
-AC_HEADER_STDC
 
 PKG_CHECK_MODULES(LIBCRYPTO, [libcrypto >= 0.9.8 ])
 AC_SUBST(KERNEL_HEADERS)
@@ -53,6 +51,16 @@ AC_ARG_ENABLE([openssl_conf],
 		AC_DEFINE(DISABLE_OPENSSL_CONF, 1, [Define to disable loading of openssl config by evmctl.])
 	      fi], [enable_openssl_conf=yes])
 
+AC_ARG_ENABLE(sigv1,
+	      AS_HELP_STRING([--enable-sigv1], [Build ima-evm-utils with signature v1 support]))
+	AM_CONDITIONAL([CONFIG_SIGV1], [test "x$enable_sigv1" = "xyes"])
+	AS_IF([test "$enable_sigv1"  != "yes"], [enable_sigv1="no"])
+
+AC_ARG_ENABLE(engine,
+	      [AS_HELP_STRING([--disable-engine], [build ima-evm-utils without OpenSSL engine support])],,[enable_engine=yes])
+	AC_CHECK_LIB([crypto], [ENGINE_init],, [enable_engine=no])
+	AM_CONDITIONAL([CONFIG_IMA_EVM_ENGINE], [test "x$enable_engine" = "xyes"])
+
 #debug support - yes for a while
 PKG_ARG_ENABLE(debug, "yes", DEBUG, [Enable Debug support])
 if test $pkg_cv_enable_debug = yes; then
@@ -73,6 +81,8 @@ AX_DEFAULT_HASH_ALGO([$KERNEL_HEADERS])
 AC_CONFIG_FILES([Makefile
 		src/Makefile
 		tests/Makefile
+		doc/Makefile
+		doc/sf/Makefile
 		packaging/ima-evm-utils.spec
 		])
 AC_OUTPUT
@@ -87,5 +97,8 @@ echo	"   openssl-conf: $enable_openssl_conf"
 echo	"      tss2-esys: $ac_cv_lib_tss2_esys_Esys_Free"
 echo	" tss2-rc-decode: $ac_cv_lib_tss2_rc_Tss2_RC_Decode"
 echo    "         ibmtss: $ac_cv_header_ibmtss_tss_h"
+echo    "         sigv1:  $enable_sigv1"
+echo    "         engine: $enable_engine"
 echo	"            doc: $have_doc"
+echo	"         pandoc: $have_pandoc"
 echo

@@ -5,5 +5,8 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 %:
 	dh $@
 
+execute_after_dh_auto_install:
+	$(RM) debian/tmp/usr/lib/*/libimaevm.la
+
 override_dh_auto_test:
 # Many tests set extended attributes, which are not guaranteed to work on a system

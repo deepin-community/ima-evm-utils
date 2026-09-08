@@ -26,9 +26,11 @@ apk add \
 	attr-dev \
 	autoconf \
 	automake \
+	bash \
 	diffutils \
 	docbook-xml \
 	docbook-xsl \
+	e2fsprogs-extra \
 	keyutils-dev \
 	libtool \
 	libxslt \
@@ -40,9 +42,11 @@ apk add \
 	pkgconfig \
 	procps \
 	sudo \
+	util-linux \
 	wget \
 	which \
-	xxd
+	xxd \
+	gawk
 
 if [ ! "$TSS" ]; then
 	apk add git
