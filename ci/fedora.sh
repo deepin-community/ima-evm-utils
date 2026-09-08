@@ -25,9 +25,12 @@ yum -y install \
 	automake \
 	diffutils \
 	docbook-xsl \
+	e2fsprogs \
+	git-core \
 	gnutls-utils \
 	gzip \
 	keyutils-libs-devel \
+	kmod \
 	libattr-devel \
 	libtool \
 	libxslt \
@@ -38,9 +41,16 @@ yum -y install \
 	pkg-config \
 	procps \
 	sudo \
+	util-linux \
 	vim-common \
 	wget \
-	which
+	which \
+	zstd \
+	systemd \
+	keyutils \
+	e2fsprogs \
+	acl \
+	libcap
 
 yum -y install docbook5-style-xsl || true
 yum -y install swtpm || true
@@ -50,3 +60,9 @@ if [ -f /etc/centos-release ]; then
 	yum -y install epel-release
 fi
 yum -y install softhsm || true
+
+# haveged is available via EPEL on CentOS stream8.
+yum -y install haveged || true
+
+./tests/install-fsverity.sh
+./tests/install-mount-idmapped.sh

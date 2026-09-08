@@ -4,8 +4,16 @@ libimaevm_la_SOURCES = libimaevm.c
 libimaevm_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCRYPTO_CFLAGS)
 # current[:revision[:age]]
 # result: [current-age].age.revision
-libimaevm_la_LDFLAGS = -version-info 3:0:0
+libimaevm_la_LDFLAGS = -version-info 4:0:0
 libimaevm_la_LIBADD =  $(LIBCRYPTO_LIBS)
+
+if CONFIG_SIGV1
+libimaevm_la_CFLAGS = -DCONFIG_SIGV1
+endif
+
+if CONFIG_IMA_EVM_ENGINE
+libimaevm_la_CFLAGS = -DCONFIG_IMA_EVM_ENGINE
+endif
 
 include_HEADERS = imaevm.h
 
@@ -21,6 +29,16 @@ evmctl_SOURCES = evmctl.c utils.c
 evmctl_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCRYPTO_CFLAGS)
 evmctl_LDFLAGS = $(LDFLAGS_READLINE)
 evmctl_LDADD =  $(LIBCRYPTO_LIBS) -lkeyutils libimaevm.la
+
+# Enable IMA signature version 1
+if CONFIG_SIGV1
+evmctl_CFLAGS = -DCONFIG_SIGV1
+endif
+
+# Enable "--engine" support
+if CONFIG_IMA_EVM_ENGINE
+evmctl_CFLAGS = -DCONFIG_IMA_EVM_ENGINE
+endif
 
 # USE_PCRTSS uses the Intel TSS
 if USE_PCRTSS

@@ -42,33 +42,6 @@ index b37325f..f9a38fc 100644
  signed by a key from the system keyring (.system). It means self-signed keys are not
  allowed. This is a default behavior unless CONFIG_IMA_TRUSTED_KEYRING is undefined.
  IMA trusted keyring is has different name '.ima'. Trusted keyring requires X509
-@@ -193,7 +193,7 @@ asymmetric keys support:
- 
- Configuration file x509_evm.genkey:
- 
--	# Begining of the file
-+	# Beginning of the file
- 	[ req ]
- 	default_bits = 1024
- 	distinguished_name = req_distinguished_name
-@@ -244,7 +244,7 @@ following steps:
- 
- Configuration file ima-local-ca.genkey:
- 
--	# Begining of the file
-+	# Beginning of the file
- 	[ req ]
- 	default_bits = 2048
- 	distinguished_name = req_distinguished_name
-@@ -275,7 +275,7 @@ Produce X509 in DER format for using while building the kernel:
- 
- Configuration file ima.genkey:
- 
--	# Begining of the file
-+	# Beginning of the file
- 	[ req ]
- 	default_bits = 1024
- 	distinguished_name = req_distinguished_name
 @@ -409,7 +409,7 @@ When using plain RSA public keys in PEM format, use 'evmctl import --rsa' for im
  
      evmctl import --rsa /etc/keys/pubkey_evm.pem $evm_id

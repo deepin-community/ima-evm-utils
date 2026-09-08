@@ -1,2 +1,2 @@
 version=4
-https://sf.net/linux-ima/@PACKAGE@@ANY_VERSION@@ARCHIVE_EXT@
+https://github.com/mimizohar/ima-evm-utils/tags .*/v@ANY_VERSION@@ARCHIVE_EXT@

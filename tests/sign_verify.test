@@ -17,6 +17,10 @@
 
 cd "$(dirname "$0")" || exit 1
 PATH=../src:$PATH
+
+# set the env SIGV1=1 to execute the signature v1 tests
+SIGV1=${SIGV1:-0}
+
 source ./functions.sh
 
 _require cmp evmctl getfattr openssl xxd
@@ -368,13 +372,18 @@ try_different_sigs() {
 
 ## Test v1 signatures
 # Signature v1 only supports sha1 and sha256 so any other should fail
-expect_fail \
-  check_sign TYPE=ima KEY=rsa1024 ALG=md5 PREFIX=0x0301 OPTS=--rsa
+if [ $SIGV1 -eq 0 ]; then
+  __skip() { echo "IMA signature v1 tests are skipped: not supported"; return $SKIP; }
+  expect_pass __skip
+else
+   expect_fail \
+      check_sign TYPE=ima KEY=rsa1024 ALG=md5 PREFIX=0x0301 OPTS=--rsa
 
-sign_verify  rsa1024  sha1    0x0301 --rsa
-sign_verify  rsa1024  sha256  0x0301 --rsa
-  try_different_keys
-  try_different_sigs
+   sign_verify  rsa1024  sha1    0x0301 --rsa
+   sign_verify  rsa1024  sha256  0x0301 --rsa
+      try_different_keys
+      try_different_sigs
+fi
 
 ## Test v2 signatures with RSA PKCS#1
 # List of allowed hashes much greater but not all are supported.
@@ -407,9 +416,12 @@ sign_verify  prime256v1 sha384 0x030205:K:004[345678]
 sign_verify  prime256v1 sha512 0x030206:K:004[345678]
 
 # If openssl 3.0 is installed, test the SM2/3 algorithm combination
-if [ -x /opt/openssl3/bin/openssl ]; then
-  PATH=/opt/openssl3/bin:$PATH LD_LIBRARY_PATH=/opt/openssl3/lib \
-    sign_verify  sm2    sm3    0x030211:K:004[345678]
+ssl_major_version=$(openssl version | sed -n 's/^OpenSSL \([^\.]\).*/\1/p')
+if [ "${ssl_major_version}" = 3 ]; then
+   sign_verify  sm2    sm3    0x030211:K:004[345678]
+else
+	__skip() { echo "sm2/sm3 tests are skipped (ssl version)"; return $SKIP; }
+  expect_pass __skip
 fi
 
 # Test v2 signatures with EC-RDSA
